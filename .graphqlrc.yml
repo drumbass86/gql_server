@@ -1,0 +1,7 @@
+# Where are all the schema files located? globs are supported eg  src/**/*.graphqls
+schema: "graph/*.graphqls"
+#documents: "graph/*.graphql"
+extension:
+  endpoints:
+    default:
+      url: 'http://localhost:8080/graphql'
