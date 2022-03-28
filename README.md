@@ -1,6 +1,6 @@
 # Example realization Server using GraphQL 
-Use tutorial on - <https://www.howtographql.com/graphql-go>.
-Instead MySQL database use PostgreSQL.
+Use tutorial on - <https://www.howtographql.com/graphql-go>.  
+Instead MySQL using PostgreSQL.
 
-Enjoy it.
-
+### Author
+ - drumbass86
