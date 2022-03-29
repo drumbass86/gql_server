@@ -51,7 +51,17 @@ func TestTableDB(t *testing.T) {
 	if err := LinksDB.Preload("User_").Joins("left join users on links.userid=users.id", LinksDB.Where(&User{Username: "test"})).
 		Find(&lFull).Error; err != nil {
 		fmt.Println(err)
+		t.Errorf("Can`t select links with joint users err:%s", err)
 	}
 	fmt.Printf("%+v\n", lFull)
+}
 
+func TestGetAllFullLinks(t *testing.T) {
+	if LinksDB == nil {
+		TestInitDB(t)
+	}
+	allLinks, err := GetAllFullLinks()
+	if err != nil || allLinks == nil {
+		t.Errorf("Can`t get links in GetAllFullLinks err:%s", err)
+	}
 }

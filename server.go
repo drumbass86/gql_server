@@ -1,6 +1,7 @@
 package main
 
 import (
+	"gql_serv/db"
 	"gql_serv/graph"
 	"gql_serv/graph/generated"
 	"log"
@@ -18,7 +19,7 @@ func main() {
 	if port == "" {
 		port = defaultPort
 	}
-
+	db.InitDB()
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
