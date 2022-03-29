@@ -15,6 +15,39 @@ const (
 	portDB = 5432
 )
 
+type User struct {
+	ID       uint
+	Username string
+	Password string
+}
+
+func (m User) TableName() string {
+	return "users"
+}
+
+type Link struct {
+	ID      uint
+	Title   string
+	Address string
+	UserID  string `gorm:"column:userid"`
+}
+
+func (l Link) TableName() string {
+	return "links"
+}
+
+type LinkFull struct {
+	ID      uint
+	Title   string
+	Address string
+	UserID  string `gorm:"column:userid"`
+	User_   User   `gorm:"foreignKey:userid"`
+}
+
+func (l LinkFull) TableName() string {
+	return "links"
+}
+
 var LinksDB *gorm.DB
 
 func InitDB() error {
