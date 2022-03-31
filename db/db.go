@@ -3,6 +3,7 @@ package db
 import (
 	"errors"
 	"fmt"
+	"log"
 
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/postgres"
@@ -82,12 +83,26 @@ func GetUserIDsByName(name string) (uint, error) {
 	}
 }
 
+func Authenticate(user *User) bool {
+	var findUser User
+	res := LinksDB.Where(&User{Username: user.Username}).First(&findUser)
+	if res.Error != nil {
+		if res.RowsAffected == 0 {
+			return false
+		} else {
+			log.Fatalf("Can`t get user by username err:%v", res.Error)
+		}
+	}
+
+	return CheckPasswordHash(user.Password, findUser.Password)
+}
+
 func HashPassword(pass string) (string, error) {
 	hashpas, err := bcrypt.GenerateFromPassword([]byte(pass), 14)
 	return string(hashpas), err
 }
 
-func CheckPasswordHash(hash, pass string) bool {
+func CheckPasswordHash(pass, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(pass))
 	return err == nil
 }

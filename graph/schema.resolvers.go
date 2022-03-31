@@ -5,10 +5,12 @@ package graph
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"gql_serv/db"
 	"gql_serv/graph/generated"
 	"gql_serv/graph/model"
+	"gql_serv/pkg/jwt"
 	"strconv"
 )
 
@@ -44,15 +46,44 @@ func (r *mutationResolver) CreateLink(ctx context.Context, newlink model.NewLink
 }
 
 func (r *mutationResolver) CreateUser(ctx context.Context, user model.NewUser) (string, error) {
-	panic(fmt.Errorf("not implemented"))
+	var userDB db.User = db.User{
+		ID:       0,
+		Username: user.Username,
+		Password: user.Password,
+	}
+	_, err := db.CreateUser(&userDB)
+	if err != nil {
+		return "", err
+	}
+	return jwt.GenerateToken(userDB.Username)
 }
 
 func (r *mutationResolver) Login(ctx context.Context, login model.Login) (string, error) {
-	panic(fmt.Errorf("not implemented"))
+	var user db.User = db.User{
+		Username: login.Username,
+		Password: login.Password,
+	}
+	correct := db.Authenticate(&user)
+	if !correct {
+		return "", errors.New("wrong username or password")
+	}
+	token, err := jwt.GenerateToken(user.Username)
+	if err != nil {
+		return "", nil
+	}
+	return token, nil
 }
 
 func (r *mutationResolver) RefreshToken(ctx context.Context, input model.RefreshTokenInput) (string, error) {
-	panic(fmt.Errorf("not implemented"))
+	username, err := jwt.ParseToken(input.Token)
+	if err != nil {
+		return "", fmt.Errorf("access denied")
+	}
+	token, err := jwt.GenerateToken(username)
+	if err != nil {
+		return "", err
+	}
+	return token, nil
 }
 
 func (r *queryResolver) Links(ctx context.Context) ([]*model.Link, error) {
