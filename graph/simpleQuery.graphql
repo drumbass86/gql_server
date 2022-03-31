@@ -1,7 +1,23 @@
 
-{
-    links {
-        title
-        address
+mutation {
+  createLink(newlink:{title:"Test createLink", address:"http://address.test"}){
+    id,
+    title,
+    author{
+      id
+      name
+    },
+    address
+  }
+}
+
+query {
+	links {
+    title
+    address
+    author {
+      id
+      name
     }
+  }  
 }
