@@ -72,6 +72,16 @@ func GetAllFullLinks() ([]LinkFull, error) {
 	}
 }
 
+func GetUserIDsByName(name string) (uint, error) {
+	var fUser User
+	res := LinksDB.Where(&User{Username: name}).First(&fUser)
+	if res.Error != nil {
+		return 0, res.Error
+	} else {
+		return fUser.ID, nil
+	}
+}
+
 func HashPassword(pass string) (string, error) {
 	hashpas, err := bcrypt.GenerateFromPassword([]byte(pass), 14)
 	return string(hashpas), err

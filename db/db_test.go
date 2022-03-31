@@ -2,7 +2,9 @@ package db
 
 import (
 	"fmt"
+	"strconv"
 	"testing"
+	"time"
 
 	"gorm.io/gorm/logger"
 )
@@ -56,12 +58,12 @@ func TestTableDB(t *testing.T) {
 	fmt.Printf("%+v\n", lFull)
 }
 
-func TestCreateUser(t *testing.T) {
+func TestCreateAndGetUser(t *testing.T) {
 	if LinksDB == nil {
 		TestInitDB(t)
 	}
 	testUser := User{
-		Username: "testUser",
+		Username: "test" + strconv.FormatInt(time.Now().Unix(), 10),
 		Password: "test_test",
 	}
 	add, err := CreateUser(&testUser)
@@ -69,6 +71,13 @@ func TestCreateUser(t *testing.T) {
 		t.Errorf("Can`t create user added_row:%v error:%v", add, err)
 	} else if testUser.ID == 0 {
 		t.Error("Can`t create user id")
+	} else {
+		testId, err := GetUserIDsByName(testUser.Username)
+		if err != nil {
+			t.Errorf("Can`t get user id by name error:%v", err)
+		} else if testUser.ID != testId {
+			t.Errorf("User id not equal got_id:%v want_id:%v", testId, testUser.ID)
+		}
 	}
 }
 
