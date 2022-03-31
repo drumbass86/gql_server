@@ -56,6 +56,22 @@ func TestTableDB(t *testing.T) {
 	fmt.Printf("%+v\n", lFull)
 }
 
+func TestCreateUser(t *testing.T) {
+	if LinksDB == nil {
+		TestInitDB(t)
+	}
+	testUser := User{
+		Username: "testUser",
+		Password: "test_test",
+	}
+	add, err := CreateUser(&testUser)
+	if err != nil {
+		t.Errorf("Can`t create user added_row:%v error:%v", add, err)
+	} else if testUser.ID == 0 {
+		t.Error("Can`t create user id")
+	}
+}
+
 func TestGetAllFullLinks(t *testing.T) {
 	if LinksDB == nil {
 		TestInitDB(t)

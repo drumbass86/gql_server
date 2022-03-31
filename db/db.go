@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -38,6 +39,11 @@ func CreateLink(l *Link) (uint, error) {
 
 func CreateUser(u *User) (uint, error) {
 	if len(u.Password) > 0 && len(u.Username) > 0 {
+		hashPass, err := HashPassword(u.Password)
+		if err != nil {
+			return 0, errors.New("Can`t hashing password for user error:" + err.Error())
+		}
+		u.Password = hashPass
 		res := LinksDB.Create(u)
 		return uint(res.RowsAffected), res.Error
 	} else {
@@ -64,4 +70,14 @@ func GetAllFullLinks() ([]LinkFull, error) {
 	} else {
 		return allLinks, nil
 	}
+}
+
+func HashPassword(pass string) (string, error) {
+	hashpas, err := bcrypt.GenerateFromPassword([]byte(pass), 14)
+	return string(hashpas), err
+}
+
+func CheckPasswordHash(hash, pass string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(pass))
+	return err == nil
 }
